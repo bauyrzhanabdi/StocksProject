@@ -126,7 +126,7 @@ final class StockCell : UITableViewCell {
     private func createLabel(text : String, fontSize : CGFloat, fontWeight : CGFloat, red: CGFloat, green : CGFloat, blue : CGFloat) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.textColor = UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1.0)
+        label.textColor = UIColor.StockCell.labelColor(red, green, blue)
         label.font = .systemFont(ofSize: fontSize, weight: UIFont.Weight(rawValue: fontWeight))
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -145,6 +145,10 @@ extension UIColor {
     fileprivate enum StockCell {
         static var starButtonTintColor : UIColor {
             UIColor(red: 186/255, green: 186/255, blue: 186/255, alpha: 1)
+        }
+        
+        static func labelColor(_ red : CGFloat, _ green: CGFloat, _ blue : CGFloat) -> UIColor {
+            return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1.0)
         }
     }
 }
