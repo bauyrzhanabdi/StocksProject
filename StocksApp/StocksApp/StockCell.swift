@@ -51,11 +51,6 @@ final class StockCell : UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    func configure(with stock : Stock) {
-//        symbolLabel.text = stock.symbol.uppercased()
-//        nameLabel.text = stock.name
-//        priceLabel.text = "\(stock.price)"
-//    }
     
     // MARK: - Methods
     private func setup() {

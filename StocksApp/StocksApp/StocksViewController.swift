@@ -10,8 +10,6 @@ import UIKit
 final class StocksViewController: UIViewController {
 
     // MARK: - Properties
-//    private var stocks : [Stock] = []
-    
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
@@ -45,7 +43,6 @@ final class StocksViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getStocks()
     }
     
     
@@ -68,25 +65,6 @@ final class StocksViewController: UIViewController {
         ])
     }
     
-//    private func getStocks() {
-//        let client = Network()
-//        let service : StocksServiceProtocol = StocksService(client: client)
-//
-//        service.getStocks { [weak self] result in
-//            switch result {
-//            case .success(let stocks):
-//                self?.stocks = stocks
-//                self?.tableView.reloadData()
-//            case .failure(let error):
-//                self?.showError(error.localizedDescription)
-//            }
-//        }
-//    }
-//
-//    private func showError(_ message : String) {
-//        print(message)
-//    }
-    
     
 }
 
@@ -95,13 +73,11 @@ final class StocksViewController: UIViewController {
 extension StocksViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as? StockCell else {fatalError("cell is null")}
-//        cell.configure(with: stocks[indexPath.row])
         cell.mainView.backgroundColor = cellColor[indexPath.row % 2]
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return stocks.count
         10
     }
     
@@ -136,20 +112,4 @@ extension UIColor {
     }
 }
 
-struct Stock : Decodable {
-    let id : String
-    let symbol : String
-    let name : String
-    let image : String
-    let price : Double
-    let change : Double
-    let percentage : Double
-
-    enum CodingKeys : String, CodingKey {
-        case id, symbol, name, image
-        case price = "current_price"
-        case change = "price_change_24h"
-        case percentage = "price_change_percentage_24h"
-    }
-}
 
