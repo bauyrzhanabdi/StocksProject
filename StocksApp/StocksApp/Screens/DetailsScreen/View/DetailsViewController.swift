@@ -8,14 +8,23 @@
 import Foundation
 import UIKit
 
-protocol DetailsViewControllerDelegate {
-    func getStocks(stock : Stock)
-}
-
 final class DetailsViewController : UIViewController {
-    // MARK: - Properties
-    private var stock : Stock = Stock(id: "yndx", symbol: "YNDX", name: "Yandex LLC", image: "star", price: 4764.6, change: 55, percentage: 1.15)
     
+    // MARK: - Initialization
+    private let presenter : DetailsPresenterProtocol
+    
+    
+    init(presenter : DetailsPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    // MARK: - Properties
     private lazy var starButton : UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
@@ -29,10 +38,10 @@ final class DetailsViewController : UIViewController {
     private lazy var nameLabel : UILabel = createLabel(fontSize: 12, fontWeight: 600, textColor: UIColor.DetailsViewController.blackColor)
     private lazy var priceLabel : UILabel = createLabel(fontSize: 28, fontWeight: 700, textColor: UIColor.DetailsViewController.blackColor)
     private lazy var changeLabel : UILabel = createLabel(fontSize: 12, fontWeight: 600, textColor: UIColor.DetailsViewController.greenColor)
-    private lazy var percentageLabel : UILabel = createLabel(fontSize: 12, fontWeight: 600, textColor: UIColor.DetailsViewController.greenColor)
     
     private lazy var companyView : UIView = createView()
     private lazy var priceView : UIView = createView()
+    private lazy var charterView : UIView = createView()
     
     // MARK: - Lifecycle
     override func loadView() {
@@ -43,6 +52,7 @@ final class DetailsViewController : UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setup()
+        presenter.loadChart()
     }
     
     
@@ -51,6 +61,7 @@ final class DetailsViewController : UIViewController {
     private func setup() {
         view.addSubview(companyView)
         view.addSubview(priceView)
+        view.addSubview(charterView)
         
         setupViews()
         setupConstraints()
@@ -61,22 +72,22 @@ final class DetailsViewController : UIViewController {
         companyView.addSubview(symbolLabel)
         companyView.addSubview(nameLabel)
         companyView.addSubview(starButton)
-        companyView.layer.shadowColor = UIColor.DetailsViewController.shadowColor.cgColor
+        
         
         priceView.addSubview(priceLabel)
         priceView.addSubview(changeLabel)
-        priceView.addSubview(percentageLabel)
         
+        charterView.backgroundColor = .yellow
     }
     
     private func configure() {
-//        guard let stock = stock else {fatalError("Stock is empty")}
-        symbolLabel.text = stock.symbol.uppercased()
+        let stock = presenter.model()
+        symbolLabel.text = stock.symbol
         nameLabel.text = stock.name
-        priceLabel.text = String(format: "%.2f$", stock.price)
-        changeLabel.text = String(format: "%.2f$", stock.change)
-        percentageLabel.text = String(format: "(%.2f%%)", stock.percentage)
+        priceLabel.text = stock.price
+        changeLabel.text = stock.change
     }
+    
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
@@ -97,16 +108,19 @@ final class DetailsViewController : UIViewController {
             priceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             priceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             priceView.topAnchor.constraint(equalTo: companyView.bottomAnchor),
-            priceView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            priceView.heightAnchor.constraint(equalToConstant: 200),
             
             priceLabel.centerXAnchor.constraint(equalTo: priceView.centerXAnchor),
-            priceView.topAnchor.constraint(equalTo: priceView.topAnchor, constant: 63),
+            priceLabel.topAnchor.constraint(equalTo: priceView.topAnchor, constant: 63),
             
             changeLabel.leadingAnchor.constraint(equalTo: priceView.leadingAnchor, constant: 141),
             changeLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
             
-            percentageLabel.leadingAnchor.constraint(equalTo: changeLabel.trailingAnchor, constant: 5),
-            percentageLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor,constant: 8)
+            charterView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            charterView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            charterView.topAnchor.constraint(equalTo: priceView.bottomAnchor, constant: 50),
+            charterView.heightAnchor.constraint(equalToConstant: 300),
+            charterView.widthAnchor.constraint(equalToConstant: 300)
         ])
     }
     
@@ -128,11 +142,18 @@ final class DetailsViewController : UIViewController {
     @objc private func buttonPressed(_ sender : UIButton) {}
 }
 // MARK: - Extensions
-extension DetailsViewController : DetailsViewControllerDelegate {
-    func getStocks(stock : Stock) {
-        self.stock = stock
+extension DetailsViewController : DetailsViewProtocol {
+    func updateView() {
+        print("Updated")
     }
     
+    func updateView(withLoader isLoading: Bool) {
+        print("Loader is - ", isLoading, " at ", Date())
+    }
+    
+    func updateView(withError message: String) {
+        fatalError("Error -- \(message)")
+    }
     
 }
 
@@ -145,10 +166,6 @@ extension UIColor {
         
         static var greenColor : UIColor {
             UIColor(red: 36/255, green: 178/255, blue: 93/255, alpha: 1)
-        }
-        
-        static var shadowColor : UIColor {
-            UIColor(red: 0, green: 0, blue: 0, alpha: 0.05)
         }
     }
 }

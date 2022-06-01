@@ -26,8 +26,7 @@ final class StockCell : UITableViewCell {
     private lazy var symbolLabel : UILabel = createLabel(text: "YNDX", fontSize: 18, fontWeight: 700, red: 26, green: 26, blue: 26)
     private lazy var nameLabel : UILabel = createLabel(text: "Yandex, LLC", fontSize: 12, fontWeight: 600, red: 0, green: 0, blue: 0)
     private lazy var priceLabel : UILabel = createLabel(text: "4 764,6 ₽", fontSize: 18, fontWeight: 700, red: 26, green: 26, blue: 26)
-    private lazy var changeLabel : UILabel = createLabel(text: "+55 ₽", fontSize: 18, fontWeight: 600, red: 36, green: 178, blue: 93)
-    private lazy var percentageLabel : UILabel = createLabel(text: "(1,15%)", fontSize: 18, fontWeight: 600, red: 36, green: 178, blue: 93)
+    private lazy var changeLabel : UILabel = createLabel(text: "+55 ₽ (1,15%)", fontSize: 18, fontWeight: 600, red: 36, green: 178, blue: 93)
     
     private lazy var starButton : UIButton = {
         let button = UIButton()
@@ -49,23 +48,11 @@ final class StockCell : UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with stock : Stock) {
-        symbolLabel.text = stock.symbol.uppercased()
-        nameLabel.text = stock.name
-        priceLabel.text = String(format: "%.2f$", stock.price)
-        changeLabel.text = String(format: "%.2f$", stock.change)
-        percentageLabel.text = String(format: "(%.2f%%)", stock.percentage)
-        
-        guard let url = URL(string: stock.image) else {return}
-        let dataTask = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            if let data = data {
-                DispatchQueue.main.async {
-                    self?.iconView.image = UIImage(data: data)
-                }
-            }
-        }
-        
-        dataTask.resume()
+    func configure(with model : StocksModelProtocol) {
+        symbolLabel.text = model.symbol
+        nameLabel.text = model.name
+        priceLabel.text = model.price
+        changeLabel.text = model.change
     }
     
     
@@ -80,7 +67,6 @@ final class StockCell : UITableViewCell {
         mainView.addSubview(infoView)
         mainView.addSubview(priceLabel)
         mainView.addSubview(changeLabel)
-        mainView.addSubview(percentageLabel)
         
         setupView()
         setupConstraints()
@@ -135,12 +121,7 @@ final class StockCell : UITableViewCell {
             priceLabel.heightAnchor.constraint(equalToConstant: 24),
             
             changeLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor),
-            changeLabel.trailingAnchor.constraint(equalTo: percentageLabel.leadingAnchor, constant: -5),
-            changeLabel.heightAnchor.constraint(equalToConstant: 16),
-            
-            percentageLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor),
-            percentageLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -12),
-            percentageLabel.heightAnchor.constraint(equalToConstant: 16)
+            changeLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -12)
             
         ])
     }
@@ -176,3 +157,14 @@ extension UIColor {
         }
     }
 }
+
+
+//        guard let url = URL(string: stock.image) else {return}
+//        let dataTask = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+//            if let data = data {
+//                DispatchQueue.main.async {
+//                    self?.iconView.image = UIImage(data: data)
+//                }
+//            }
+//        }
+//        dataTask.resume()

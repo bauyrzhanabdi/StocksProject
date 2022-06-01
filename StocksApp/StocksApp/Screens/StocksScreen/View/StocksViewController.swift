@@ -8,30 +8,31 @@
 import UIKit
 
 final class StocksViewController: UIViewController {
-
-    // MARK: - Properties
-    public weak var delegate : DetailsViewController?
+    // MARK: - Initialization
     
-    private var stocks : [Stock] = []
+    private let presenter : StocksPresenterProtocol
+    
+    init(presenter: StocksPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Properties
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(StockCell.self, forCellReuseIdentifier: StockCell.typeName)
 
         return tableView
-    }()
-    
-    private lazy var pageLabel : UILabel = {
-        let label = UILabel()
-        label.text = "Stocks"
-        label.textColor = UIColor.StockViewController.textColor
-        label.font = .systemFont(ofSize: 28, weight: UIFont.Weight(rawValue: 700))
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
     }()
     
     private lazy var cellColor : [UIColor] = [
@@ -48,7 +49,7 @@ final class StocksViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getStocks()
+        presenter.loadView()
     }
     
     
@@ -56,40 +57,19 @@ final class StocksViewController: UIViewController {
     
     private func setupSubview() {
         view.backgroundColor = .white
-        view.addSubview(pageLabel)
+        title = "Stocks"
+        navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
+
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            pageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            pageLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 35),
-            pageLabel.heightAnchor.constraint(equalToConstant: 32),
-            
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.topAnchor.constraint(equalTo: pageLabel.bottomAnchor, constant: 18),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    private func getStocks() {
-        let client = Network()
-        let service : StocksServiceProtocol = StocksService(client: client)
-        
-        service.getStocks { [weak self] result in
-            switch result {
-            case .success(let stocks):
-                self?.stocks = stocks
-                self?.tableView.reloadData()
-            case .failure(let error):
-                self?.showError(error.localizedDescription)
-            }
-        }
-    }
-    
-    private func showError(_ message : String) {
-        print(message)
-    }
-    
 }
 
 // MARK: - Extensions
@@ -98,12 +78,12 @@ extension StocksViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as? StockCell else {fatalError("cell is null")}
         cell.mainView.backgroundColor = cellColor[indexPath.row % 2]
-        cell.configure(with: stocks[indexPath.row])
+        cell.configure(with: presenter.model(for: indexPath))
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stocks.count
+        return presenter.itemsCount
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -112,8 +92,7 @@ extension StocksViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        tableView.deselectRow(at: indexPath, animated: true)
-        delegate?.getStocks(stock: stocks[indexPath.row])
-        navigationController?.pushViewController(DetailsViewController(), animated: true)
+        navigationController?.pushViewController(ModuleBuilder.shared.detailsModule(stock: presenter.model(for: indexPath)), animated: true)
         
     }
 }
@@ -122,10 +101,19 @@ extension StocksViewController : UITableViewDelegate {
     
 }
 
-extension NSObject {
-    static var typeName : String {
-        String(describing: self)
+extension StocksViewController : StocksViewProtocol {
+    func updateView() {
+        tableView.reloadData()
     }
+    
+    func updateView(withLoader isLoading: Bool) {
+        print("Loader is - ", isLoading, " at ", Date())
+    }
+    
+    func updateView(withError message: String) {
+        fatalError("Error -- \(message)")
+    }
+    
 }
 
 extension UIColor {
@@ -144,23 +132,5 @@ extension UIColor {
     }
 }
 
-// MARK: - Structure
-
-struct Stock : Decodable {
-    let id : String
-    let symbol : String
-    let name : String
-    let image : String
-    let price : Double
-    let change : Double
-    let percentage : Double
-
-    enum CodingKeys : String, CodingKey {
-        case id, symbol, name, image
-        case price = "current_price"
-        case change = "price_change_24h"
-        case percentage = "price_change_percentage_24h"
-    }
-}
 
 
