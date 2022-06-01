@@ -28,9 +28,10 @@ final class DetailsViewController : UIViewController {
     private lazy var starButton : UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
+        button.setImage(.checkmark, for: .selected)
         button.tintColor = UIColor.DetailsViewController.blackColor
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        button.addTarget(self, action: #selector(starButtonPressed), for: .touchUpInside)
         return button
     }()
     
@@ -41,7 +42,7 @@ final class DetailsViewController : UIViewController {
     
     private lazy var companyView : UIView = createView()
     private lazy var priceView : UIView = createView()
-    private lazy var charterView : UIView = createView()
+    private lazy var chartView : UIView = createView()
     
     // MARK: - Lifecycle
     override func loadView() {
@@ -61,7 +62,7 @@ final class DetailsViewController : UIViewController {
     private func setup() {
         view.addSubview(companyView)
         view.addSubview(priceView)
-        view.addSubview(charterView)
+        view.addSubview(chartView)
         
         setupViews()
         setupConstraints()
@@ -73,11 +74,10 @@ final class DetailsViewController : UIViewController {
         companyView.addSubview(nameLabel)
         companyView.addSubview(starButton)
         
-        
         priceView.addSubview(priceLabel)
         priceView.addSubview(changeLabel)
         
-        charterView.backgroundColor = .yellow
+        chartView.backgroundColor = .yellow
     }
     
     private func configure() {
@@ -105,6 +105,7 @@ final class DetailsViewController : UIViewController {
             starButton.topAnchor.constraint(equalTo: companyView.topAnchor, constant: 50),
             starButton.trailingAnchor.constraint(equalTo: companyView.trailingAnchor, constant: -23),
             
+            
             priceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             priceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             priceView.topAnchor.constraint(equalTo: companyView.bottomAnchor),
@@ -116,11 +117,10 @@ final class DetailsViewController : UIViewController {
             changeLabel.leadingAnchor.constraint(equalTo: priceView.leadingAnchor, constant: 141),
             changeLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
             
-            charterView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            charterView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
-            charterView.topAnchor.constraint(equalTo: priceView.bottomAnchor, constant: 50),
-            charterView.heightAnchor.constraint(equalToConstant: 300),
-            charterView.widthAnchor.constraint(equalToConstant: 300)
+            chartView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            chartView.topAnchor.constraint(equalTo: priceView.bottomAnchor, constant: 50),
+            chartView.heightAnchor.constraint(equalToConstant: 300),
+            chartView.widthAnchor.constraint(equalToConstant: 300)
         ])
     }
     
@@ -139,16 +139,18 @@ final class DetailsViewController : UIViewController {
     }
     
     
-    @objc private func buttonPressed(_ sender : UIButton) {}
+    @objc private func starButtonPressed(_ sender : UIButton) {
+        print("detail button pressed")
+    }
 }
 // MARK: - Extensions
 extension DetailsViewController : DetailsViewProtocol {
     func updateView() {
-        print("Updated")
+//        print("Updated")
     }
     
     func updateView(withLoader isLoading: Bool) {
-        print("Loader is - ", isLoading, " at ", Date())
+//        print("Loader is - ", isLoading, " at ", Date())
     }
     
     func updateView(withError message: String) {
