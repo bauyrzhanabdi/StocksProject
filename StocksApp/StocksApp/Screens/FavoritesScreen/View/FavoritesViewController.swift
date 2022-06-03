@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 final class FavoritesViewController: UIViewController {
-    private lazy var model : StocksModelProtocol = FavoritesModel(favorite: Stock(id: "yandex", symbol: "yndx", name: "Yandex LLC", image: "some", price: 100, change: 55, percentage: 0.4))
     
     private let presenter : FavoritesPresenterProtocol
     
@@ -48,8 +47,10 @@ final class FavoritesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter.loadFavorites()
+        presenter.loadView()
     }
+    
+
     
     // MARK: - Methods
 
@@ -71,12 +72,11 @@ final class FavoritesViewController: UIViewController {
 }
 
 // MARK: Extensions
-extension FavoritesViewController : UITableViewDataSource {
+extension FavoritesViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as? StockCell else {fatalError("cell is null")}
         cell.mainView.backgroundColor = cellColor[indexPath.row % 2]
         cell.configure(with: presenter.model(for: indexPath))
-//        cell.configure(with: model)
         return cell
     }
     
@@ -89,16 +89,10 @@ extension FavoritesViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: true)
-        navigationController?.pushViewController(ModuleBuilder.shared.detailsModule(stock: presenter.model(for: indexPath)), animated: true)
-        
+        let model = presenter.model(for: indexPath)
+        let detailsVC = ModuleBuilder.shared.detailsModule(model: model)
+        navigationController?.pushViewController(detailsVC, animated: true)
     }
-    
-    
-}
-
-extension FavoritesViewController : UITableViewDelegate {
-    
 }
 
 extension FavoritesViewController : FavoritesViewProtocol {

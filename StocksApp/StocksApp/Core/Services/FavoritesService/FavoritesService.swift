@@ -11,7 +11,7 @@ protocol FavoritesServiceProtocol {
     func save(stock : Stock)
     func remove(stock : Stock)
     func isFavorite(for id : String) -> Bool
-    func favoriteModels() -> [Stock]
+    func favoriteStocks() -> [Stock]
 }
 
 final class FavoritesService : FavoritesServiceProtocol {
@@ -32,15 +32,13 @@ final class FavoritesService : FavoritesServiceProtocol {
     
     func save(stock: Stock) {
         favorites.append(stock)
-        print(favorites)
-        updateRepo()
+        updateRepo(with: stock.id)
     }
     
     func remove(stock: Stock) {
         if let index = favorites.firstIndex(where: {$0.id == stock.id}) {
             favorites.remove(at: index)
-            print(favorites)
-            updateRepo()
+            updateRepo(with: stock.id)
         }
     }
     
@@ -48,14 +46,15 @@ final class FavoritesService : FavoritesServiceProtocol {
         favorites.contains(where: {$0.id == id})
     }
     
-    func favoriteModels() -> [Stock] {
+    func favoriteStocks() -> [Stock] {
         return favorites
     }
     
-    private func updateRepo() {
+    private func updateRepo(with id : String) {
         do {
             let data = try JSONEncoder().encode(favorites)
             try data.write(to: path)
+            NotificationCenter.default.post(name: NSNotification.Name.favoriteNotification, object: nil, userInfo: ["id" : id])
         } catch {
             print("FileManager WriteError - ", error.localizedDescription)
         }

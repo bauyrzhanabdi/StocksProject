@@ -38,8 +38,7 @@ final class ModuleBuilder {
     }
     
     private func favoritesModule() -> UIViewController {
-        let service = FavoritesService()
-        let presenter = FavoritesPresenter(service: service)
+        let presenter = FavoritesPresenter(service: favoritesService)
         let view = FavoritesViewController(presenter: presenter)
         
         presenter.view = view
@@ -51,9 +50,9 @@ final class ModuleBuilder {
         SearchViewController()
     }
     
-    func detailsModule(stock : StocksModelProtocol) -> UIViewController {
+    func detailsModule(model : StocksModelProtocol) -> UIViewController {
         let service = StocksService(client: client)
-        let presenter = DetailsPresenter(service: service, stock: stock)
+        let presenter = DetailsPresenter(service: service, model: model)
         let view = DetailsViewController(presenter: presenter)
         
         presenter.view = view

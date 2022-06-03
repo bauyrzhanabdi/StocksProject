@@ -34,8 +34,8 @@ final class StockCell : UITableViewCell {
     
     private lazy var starButton : UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "star"), for: .normal)
-        button.setImage(.checkmark, for: .selected)
+        button.setImage(UIImage(named: "favorite-off"), for: .normal)
+        button.setImage(UIImage(named: "favorite-on"), for: .selected)
         button.tintColor = UIColor.StockCell.starButtonTintColor
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(starButtonPressed), for: .touchUpInside)

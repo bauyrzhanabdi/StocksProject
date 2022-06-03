@@ -5,6 +5,11 @@
 //  Created by Bauyrzhan Abdi on 01.06.2022.
 //
 
+// в файл менеджере хранишь только айдишки
+// в фаворитПрезентере делаешь ссылку на стокмоделпротокол и хранишь все стоки
+// пишешь функцию которая при вызове сравнивает айдишки из файл менеджера с айдишками всех стоков э
+// и хранит только избранные у которых айдишка совпала
+ 
 import Foundation
 import UIKit
 
@@ -18,14 +23,14 @@ protocol FavoritesPresenterProtocol {
     var view : FavoritesViewProtocol? {get set}
     var itemsCount : Int {get}
     
-    func loadFavorites()
+    func loadView()
     func model(for indexPath : IndexPath) -> StocksModelProtocol
 }
 
 final class FavoritesPresenter : FavoritesPresenterProtocol {
     
     weak var view: FavoritesViewProtocol?
-    private let service : FavoritesServiceProtocol 
+    private let service : FavoritesServiceProtocol
     private var favorites : [StocksModelProtocol] = []
     
     var itemsCount: Int {
@@ -36,14 +41,25 @@ final class FavoritesPresenter : FavoritesPresenterProtocol {
         self.service = service
     }
     
+    func loadView() {
+        startObservingFavoriteNotifications()
+        loadFavorites()
+    }
     
     func loadFavorites() {
-        favorites = service.favoriteModels().map({ favorite in
-            FavoritesModel(favorite: favorite)})
+        let stocks = service.favoriteStocks()
+        favorites = stocks.map({ stock in StocksModel(stock: stock)})
     }
     
     func model(for indexPath : IndexPath) -> StocksModelProtocol {
         return favorites[indexPath.row]
     }
    
+}
+
+extension FavoritesPresenter : FavoritesUpdateServiceProtocol {
+    func setFavorite(notification: Notification) {
+        loadFavorites()
+        view?.updateView()
+    }
 }

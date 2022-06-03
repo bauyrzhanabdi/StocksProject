@@ -74,7 +74,7 @@ final class StocksViewController: UIViewController {
 
 // MARK: - Extensions
 
-extension StocksViewController : UITableViewDataSource {
+extension StocksViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as? StockCell else {fatalError("cell is null")}
         cell.mainView.backgroundColor = cellColor[indexPath.row % 2]
@@ -91,19 +91,19 @@ extension StocksViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: true)
-        navigationController?.pushViewController(ModuleBuilder.shared.detailsModule(stock: presenter.model(for: indexPath)), animated: true)
-        
+        let model = presenter.model(for: indexPath)
+        let detailVC = ModuleBuilder.shared.detailsModule(model: model)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
-}
-
-extension StocksViewController : UITableViewDelegate {
-    
 }
 
 extension StocksViewController : StocksViewProtocol {
     func updateView() {
         tableView.reloadData()
+    }
+    
+    func updateCell(for indexPath: IndexPath) {
+        tableView.reloadRows(at: [indexPath], with: .none)
     }
     
     func updateView(withLoader isLoading: Bool) {
