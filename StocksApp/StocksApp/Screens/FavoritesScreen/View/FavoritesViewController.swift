@@ -1,18 +1,19 @@
 //
-//  ViewController.swift
+//  FavoritesViewController.swift
 //  StocksApp
 //
-//  Created by Bauyrzhan Abdi on 25.05.2022.
+//  Created by Bauyrzhan Abdi on 27.05.2022.
 //
 
+import Foundation
 import UIKit
 
-final class StocksViewController: UIViewController {
-    // MARK: - Initialization
+final class FavoritesViewController: UIViewController {
+    private lazy var model : StocksModelProtocol = FavoritesModel(favorite: Stock(id: "yandex", symbol: "yndx", name: "Yandex LLC", image: "some", price: 100, change: 55, percentage: 0.4))
     
-    private let presenter : StocksPresenterProtocol
+    private let presenter : FavoritesPresenterProtocol
     
-    init(presenter: StocksPresenterProtocol) {
+    init(presenter: FavoritesPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -22,7 +23,6 @@ final class StocksViewController: UIViewController {
     }
     
     // MARK: - Properties
-    
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
@@ -36,31 +36,29 @@ final class StocksViewController: UIViewController {
     }()
     
     private lazy var cellColor : [UIColor] = [
-        UIColor.StockViewController.greyCellColor,
-        UIColor.StockViewController.whiteCellColor
+        UIColor.FavoritesViewController.greyCellColor,
+        UIColor.FavoritesViewController.whiteCellColor
     ]
     
     // MARK: - Lifecycle
     override func loadView() {
         super.loadView()
         setupSubview()
-
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter.loadView()
+        presenter.loadFavorites()
     }
     
-    
     // MARK: - Methods
-    
+
     private func setupSubview() {
         view.backgroundColor = .white
-        title = "Stocks"
+        title = "Favourite"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-
+        
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -72,13 +70,13 @@ final class StocksViewController: UIViewController {
     }
 }
 
-// MARK: - Extensions
-
-extension StocksViewController : UITableViewDataSource {
+// MARK: Extensions
+extension FavoritesViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as? StockCell else {fatalError("cell is null")}
         cell.mainView.backgroundColor = cellColor[indexPath.row % 2]
         cell.configure(with: presenter.model(for: indexPath))
+//        cell.configure(with: model)
         return cell
     }
     
@@ -95,13 +93,15 @@ extension StocksViewController : UITableViewDataSource {
         navigationController?.pushViewController(ModuleBuilder.shared.detailsModule(stock: presenter.model(for: indexPath)), animated: true)
         
     }
-}
-
-extension StocksViewController : UITableViewDelegate {
+    
     
 }
 
-extension StocksViewController : StocksViewProtocol {
+extension FavoritesViewController : UITableViewDelegate {
+    
+}
+
+extension FavoritesViewController : FavoritesViewProtocol {
     func updateView() {
         tableView.reloadData()
     }
@@ -117,7 +117,7 @@ extension StocksViewController : StocksViewProtocol {
 }
 
 extension UIColor {
-    fileprivate enum StockViewController {
+    fileprivate enum FavoritesViewController {
         static var textColor : UIColor {
             UIColor(red: 26/255, green: 26/255, blue: 26/255, alpha: 1.0)
         }
@@ -131,6 +131,3 @@ extension UIColor {
         }
     }
 }
-
-
-

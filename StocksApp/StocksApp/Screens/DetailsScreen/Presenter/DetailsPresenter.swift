@@ -44,9 +44,9 @@ final class DetailsPresenter : DetailsPresenterProtocol {
             case .success(let detail):
                 self?.detail = DetailsModel(detail: detail)
                 self?.view?.updateView()
-                print("prices --", self?.detail?.prices as Any)
-                print("caps --", self?.detail?.caps as Any)
-                print("volumes --", self?.detail?.volumes as Any)
+//                print("prices --", self?.detail?.prices as Any)
+//                print("caps --", self?.detail?.caps as Any)
+//                print("volumes --", self?.detail?.volumes as Any)
             case .failure(let error):
                 print(error.rawValue)
             }
