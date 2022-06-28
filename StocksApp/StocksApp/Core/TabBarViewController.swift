@@ -21,7 +21,7 @@ final class TabBarViewController : UITabBarController {
        
         return view
     }()
-    private let favoritesVC = FavoritesViewController(presenter: FavoritesPresenter(service: FavoritesService()))
+    private let favoritesVC = FavouritesViewController()
     private let searchVC = SearchViewController()
 //    private let detailsVC = DetailsViewController()
     

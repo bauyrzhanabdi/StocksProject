@@ -30,9 +30,6 @@
 		B2B39B502845E312003979F4 /* DetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B4F2845E312003979F4 /* DetailsModel.swift */; };
 		B2B39B522845E343003979F4 /* DetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B512845E343003979F4 /* DetailsPresenter.swift */; };
 		B2B39B5628460C0B003979F4 /* DetailsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B5528460C0B003979F4 /* DetailsResponse.swift */; };
-		B2B39B5C28476C14003979F4 /* FavoritesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B5B28476C14003979F4 /* FavoritesService.swift */; };
-		B2B39B5F28478221003979F4 /* FavoritesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B5E28478221003979F4 /* FavoritesModel.swift */; };
-		B2B39B622847823B003979F4 /* FavoritesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39B612847823B003979F4 /* FavoritesPresenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,9 +58,6 @@
 		B2B39B4F2845E312003979F4 /* DetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsModel.swift; sourceTree = "<group>"; };
 		B2B39B512845E343003979F4 /* DetailsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsPresenter.swift; sourceTree = "<group>"; };
 		B2B39B5528460C0B003979F4 /* DetailsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsResponse.swift; sourceTree = "<group>"; };
-		B2B39B5B28476C14003979F4 /* FavoritesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesService.swift; sourceTree = "<group>"; };
-		B2B39B5E28478221003979F4 /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
-		B2B39B612847823B003979F4 /* FavoritesPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesPresenter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,7 +113,6 @@
 		B2B39B1E28409871003979F4 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B2B39B5A28476BF5003979F4 /* FavoritesService */,
 				B2B39B2028409888003979F4 /* NetworkService */,
 			);
 			path = Services;
@@ -264,9 +257,7 @@
 		B2B39B58284635C5003979F4 /* FavoritesScreen */ = {
 			isa = PBXGroup;
 			children = (
-				B2B39B5D2847820A003979F4 /* Model */,
-				B2B39B632847823F003979F4 /* View */,
-				B2B39B6028478226003979F4 /* Presenter */,
+				B2B39B352840C127003979F4 /* FavoritesViewController.swift */,
 			);
 			path = FavoritesScreen;
 			sourceTree = "<group>";
@@ -277,38 +268,6 @@
 				B2B39B332840C10C003979F4 /* SearchViewController.swift */,
 			);
 			path = SeachScreen;
-			sourceTree = "<group>";
-		};
-		B2B39B5A28476BF5003979F4 /* FavoritesService */ = {
-			isa = PBXGroup;
-			children = (
-				B2B39B5B28476C14003979F4 /* FavoritesService.swift */,
-			);
-			path = FavoritesService;
-			sourceTree = "<group>";
-		};
-		B2B39B5D2847820A003979F4 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				B2B39B5E28478221003979F4 /* FavoritesModel.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		B2B39B6028478226003979F4 /* Presenter */ = {
-			isa = PBXGroup;
-			children = (
-				B2B39B612847823B003979F4 /* FavoritesPresenter.swift */,
-			);
-			path = Presenter;
-			sourceTree = "<group>";
-		};
-		B2B39B632847823F003979F4 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				B2B39B352840C127003979F4 /* FavoritesViewController.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -395,13 +354,10 @@
 				B2B39B3A2844DAAB003979F4 /* StocksPresenter.swift in Sources */,
 				B2198755283E633A00BB4C96 /* AppDelegate.swift in Sources */,
 				B2198769283E63E300BB4C96 /* StockCell.swift in Sources */,
-				B2B39B622847823B003979F4 /* FavoritesPresenter.swift in Sources */,
 				B2B39B362840C127003979F4 /* FavoritesViewController.swift in Sources */,
-				B2B39B5C28476C14003979F4 /* FavoritesService.swift in Sources */,
 				B2B39B26284098D3003979F4 /* Router.swift in Sources */,
 				B2B39B24284098B6003979F4 /* NetworkError.swift in Sources */,
 				B2B39B382840C71E003979F4 /* TabBarViewController.swift in Sources */,
-				B2B39B5F28478221003979F4 /* FavoritesModel.swift in Sources */,
 				B2B39B402844E760003979F4 /* NSObject+Ext.swift in Sources */,
 				B2B39B2B28409942003979F4 /* StocksService.swift in Sources */,
 				B2B39B28284098F5003979F4 /* NetworkService.swift in Sources */,

@@ -107,7 +107,7 @@ extension StocksViewController : StocksViewProtocol {
     }
     
     func updateView(withLoader isLoading: Bool) {
-//        print("Loader is - ", isLoading, " at ", Date())
+        print("Loader is - ", isLoading, " at ", Date())
     }
     
     func updateView(withError message: String) {
