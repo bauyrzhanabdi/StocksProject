@@ -15,6 +15,7 @@ final class ModuleBuilder {
        Network()
     }()
     
+    let favoritesService : FavoritesServiceProtocol =  FavoritesService()
     
     static let shared : ModuleBuilder = .init()
     
@@ -37,16 +38,21 @@ final class ModuleBuilder {
     }
     
     private func favoritesModule() -> UIViewController {
-        FavouritesViewController()
+        let presenter = FavoritesPresenter(service: favoritesService)
+        let view = FavoritesViewController(presenter: presenter)
+        
+        presenter.view = view
+        
+        return view
     }
     
     private func searchModule() -> UIViewController {
         SearchViewController()
     }
     
-    func detailsModule(stock : StocksModelProtocol) -> UIViewController {
+    func detailsModule(model : StocksModelProtocol) -> UIViewController {
         let service = StocksService(client: client)
-        let presenter = DetailsPresenter(service: service, stock: stock)
+        let presenter = DetailsPresenter(service: service, model: model)
         let view = DetailsViewController(presenter: presenter)
         
         presenter.view = view

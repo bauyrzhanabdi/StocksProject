@@ -16,45 +16,59 @@ protocol DetailsViewProtocol : AnyObject {
 
 protocol DetailsPresenterProtocol {
     var view : DetailsViewProtocol? {get set}
+    var title : String? { get }
+    var favoriteButtonIsSelected : Bool {get}
     
     func loadChart()
-    func model() -> StocksModelProtocol
+    func modelStock() -> StocksModelProtocol
+    func favoriteButtonTapped()
 }
 
 final class DetailsPresenter : DetailsPresenterProtocol {
     weak var view: DetailsViewProtocol?
+    
+    private let model : StocksModelProtocol
     private let service : StocksServiceProtocol
-    private let stock : StocksModelProtocol
     private var detail : DetailsModelProtocol?
     
+
+    var favoriteButtonIsSelected : Bool {
+        model.isFavourite
+    }
     
-    init(service: StocksServiceProtocol, stock: StocksModelProtocol) {
+    var title : String? {
+        model.symbol
+    }
+    
+    
+    init(service: StocksServiceProtocol, model: StocksModelProtocol) {
         self.service = service
-        self.stock = stock
+        self.model = model
     }
     
     
     func loadChart() {
         view?.updateView(withLoader: true)
         
-        service.getDetails(id: stock.id) { [weak self] result in
+        service.getDetails(id: model.id) { [weak self] result in
             self?.view?.updateView(withLoader: false)
             
             switch result {
             case .success(let detail):
                 self?.detail = DetailsModel(detail: detail)
                 self?.view?.updateView()
-                print("prices --", self?.detail?.prices as Any)
-                print("caps --", self?.detail?.caps as Any)
-                print("volumes --", self?.detail?.volumes as Any)
             case .failure(let error):
                 print(error.rawValue)
             }
         }
     }
     
-    func model() -> StocksModelProtocol {
-        return stock
+    func modelStock() -> StocksModelProtocol {
+        return self.model
+    }
+    
+    func favoriteButtonTapped() {
+        model.setFavorite()
     }
    
 }

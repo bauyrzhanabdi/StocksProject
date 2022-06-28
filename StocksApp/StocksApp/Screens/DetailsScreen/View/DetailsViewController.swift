@@ -25,23 +25,13 @@ final class DetailsViewController : UIViewController {
     
     
     // MARK: - Properties
-    private lazy var starButton : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "star"), for: .normal)
-        button.tintColor = UIColor.DetailsViewController.blackColor
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var symbolLabel : UILabel = createLabel(fontSize: 18, fontWeight: 700, textColor: UIColor.DetailsViewController.blackColor)
     private lazy var nameLabel : UILabel = createLabel(fontSize: 12, fontWeight: 600, textColor: UIColor.DetailsViewController.blackColor)
     private lazy var priceLabel : UILabel = createLabel(fontSize: 28, fontWeight: 700, textColor: UIColor.DetailsViewController.blackColor)
     private lazy var changeLabel : UILabel = createLabel(fontSize: 12, fontWeight: 600, textColor: UIColor.DetailsViewController.greenColor)
     
     private lazy var companyView : UIView = createView()
     private lazy var priceView : UIView = createView()
-    private lazy var charterView : UIView = createView()
+    private lazy var chartView : UIView = createView()
     
     // MARK: - Lifecycle
     override func loadView() {
@@ -50,7 +40,7 @@ final class DetailsViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+
         setup()
         presenter.loadChart()
     }
@@ -59,31 +49,43 @@ final class DetailsViewController : UIViewController {
     
     // MARK: - Methods
     private func setup() {
-        view.addSubview(companyView)
         view.addSubview(priceView)
-        view.addSubview(charterView)
+        view.addSubview(chartView)
         
-        setupViews()
+        setupView()
+        setupSubViews()
         setupConstraints()
+        setupFavoriteButton()
         configure()
     }
     
-    private func setupViews() {
-        companyView.addSubview(symbolLabel)
-        companyView.addSubview(nameLabel)
-        companyView.addSubview(starButton)
-        
-        
+    private func setupView() {
+        view.backgroundColor = .white
+        title = presenter.title
+        navigationController?.navigationBar.prefersLargeTitles = false
+    }
+    
+    private func setupSubViews() {
         priceView.addSubview(priceLabel)
         priceView.addSubview(changeLabel)
         
-        charterView.backgroundColor = .yellow
+        chartView.backgroundColor = .yellow
+    }
+    
+    private func setupFavoriteButton() {
+        let button = UIButton()
+        button.setImage(UIImage(named: "favorite-off"), for: .normal)
+        button.setImage(UIImage(named: "favorite-on"), for: .selected)
+        button.tintColor = UIColor.DetailsViewController.blackColor
+        button.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+        button.isSelected = presenter.favoriteButtonIsSelected
+        button.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
     
     private func configure() {
-        let stock = presenter.model()
-        symbolLabel.text = stock.symbol
-        nameLabel.text = stock.name
+        let stock = presenter.modelStock()
         priceLabel.text = stock.price
         changeLabel.text = stock.change
     }
@@ -91,23 +93,9 @@ final class DetailsViewController : UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            companyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            companyView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            companyView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-            companyView.heightAnchor.constraint(equalToConstant: 99),
-            
-            symbolLabel.topAnchor.constraint(equalTo: companyView.topAnchor, constant: 42),
-            symbolLabel.centerXAnchor.constraint(equalTo: companyView.centerXAnchor),
-            
-            nameLabel.topAnchor.constraint(equalTo: symbolLabel.bottomAnchor, constant: 4),
-            nameLabel.centerXAnchor.constraint(equalTo: companyView.centerXAnchor),
-            
-            starButton.topAnchor.constraint(equalTo: companyView.topAnchor, constant: 50),
-            starButton.trailingAnchor.constraint(equalTo: companyView.trailingAnchor, constant: -23),
-            
             priceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             priceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            priceView.topAnchor.constraint(equalTo: companyView.bottomAnchor),
+            priceView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
             priceView.heightAnchor.constraint(equalToConstant: 200),
             
             priceLabel.centerXAnchor.constraint(equalTo: priceView.centerXAnchor),
@@ -116,11 +104,10 @@ final class DetailsViewController : UIViewController {
             changeLabel.leadingAnchor.constraint(equalTo: priceView.leadingAnchor, constant: 141),
             changeLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
             
-            charterView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            charterView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
-            charterView.topAnchor.constraint(equalTo: priceView.bottomAnchor, constant: 50),
-            charterView.heightAnchor.constraint(equalToConstant: 300),
-            charterView.widthAnchor.constraint(equalToConstant: 300)
+            chartView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            chartView.topAnchor.constraint(equalTo: priceView.bottomAnchor, constant: 50),
+            chartView.heightAnchor.constraint(equalToConstant: 300),
+            chartView.widthAnchor.constraint(equalToConstant: 300)
         ])
     }
     
@@ -139,16 +126,19 @@ final class DetailsViewController : UIViewController {
     }
     
     
-    @objc private func buttonPressed(_ sender : UIButton) {}
+    @objc private func favoriteButtonPressed(_ sender : UIButton) {
+        sender.isSelected.toggle()
+        presenter.favoriteButtonTapped()
+    }
 }
 // MARK: - Extensions
 extension DetailsViewController : DetailsViewProtocol {
     func updateView() {
-        print("Updated")
+//        print("Updated")
     }
     
     func updateView(withLoader isLoading: Bool) {
-        print("Loader is - ", isLoading, " at ", Date())
+//        print("Loader is - ", isLoading, " at ", Date())
     }
     
     func updateView(withError message: String) {
